@@ -1,19 +1,49 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title></title>
-    <link>//localhost:1313/</link>
-    <description>Recent content on </description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 30 Aug 2024 14:08:28 +0800</lastBuildDate>
-    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <title>Lee Jacking</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Lee Jacking</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 30 Aug 2024 14:08:28 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>For You</title>
-      <link>//localhost:1313/second/</link>
+      <link>http://localhost:1313/posts/2foru/</link>
       <pubDate>Fri, 30 Aug 2024 14:08:28 +0800</pubDate>
-      <guid>//localhost:1313/second/</guid>
-      <description>Dear Yuan,&#xA;谢谢在我最需要的时候，你回来照顾我，你回来的几天让我真的很开心，甚至我都想自己的伤能再慢一点好转。除祂以外，你是我最大的帮助者，也是我的力量来源。&#xA;感谢主儿子独自在那边一点没有受到，也很感恩儿子学会走路了，看到他每一天快乐的成长，我的心也时常飞到你们那里，想象着他可爱又搞笑的模样。&#xA;让我们彼此祷告，求主帮助我们，带领我们。&#xA;爱你和儿子的Lee</description>
+      
+      <guid>http://localhost:1313/posts/2foru/</guid>
+      
+      <description>Dear Yuan,
+谢谢在我最需要的时候，你回来照顾我，你回来的几天让我真的很开心，甚至我都想自己的伤能再慢一点好转。除祂以外，你是我最大的帮助者，也是我的力量来源。
+感谢主儿子独自在那边一点没有受到影响，也很感恩儿子学会走路了，看到他每一天快乐的成长，我的心也时常飞到你们那里，想象着他可爱又搞笑的模样。
+让我们彼此祷告，求主帮助我们，带领我们。
+爱你和儿子的Lee</description>
+      
     </item>
+    
+    <item>
+      <title>Your First Step</title>
+      <link>http://localhost:1313/posts/3yourfirststep/</link>
+      <pubDate>Fri, 30 Aug 2024 14:08:28 +0800</pubDate>
+      
+      <guid>http://localhost:1313/posts/3yourfirststep/</guid>
+      
+      <description>This is your first step without anyone&amp;rsquo;s help, I am very glad for you, my adorable son.
+KEEP up the good work！</description>
+      
+    </item>
+    
+    <item>
+      <title>Hello</title>
+      <link>http://localhost:1313/posts/1hello/</link>
+      <pubDate>Thu, 29 Aug 2024 14:08:28 +0800</pubDate>
+      
+      <guid>http://localhost:1313/posts/1hello/</guid>
+      
+      <description>This is my first step to write a blog.</description>
+      
+    </item>
+    
   </channel>
 </rss>
