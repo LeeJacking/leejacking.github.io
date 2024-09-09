@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://krislinzhao.github.io/sitemap.xml
