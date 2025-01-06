@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-gb"><head><meta charset="utf-8">
+<html lang="en-gb"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title itemprop="name">Hello | Lee Jacking</title>
-<meta property="og:title" content="Hello | Lee Jacking" />
-<meta name="twitter:title" content="Hello | Lee Jacking" />
-<meta itemprop="name" content="Hello | Lee Jacking" />
-<meta name="application-name" content="Hello | Lee Jacking" />
+<title itemprop="name">使用Hugo和Github Pages搭建博客 | Lee Jacking</title>
+<meta property="og:title" content="使用Hugo和Github Pages搭建博客 | Lee Jacking" />
+<meta name="twitter:title" content="使用Hugo和Github Pages搭建博客 | Lee Jacking" />
+<meta itemprop="name" content="使用Hugo和Github Pages搭建博客 | Lee Jacking" />
+<meta name="application-name" content="使用Hugo和Github Pages搭建博客 | Lee Jacking" />
 <meta property="og:site_name" content="Lee Jacking" />
 
 <meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
@@ -18,7 +18,7 @@
 <meta property="og:locale" content="en-gb" />
 <meta name="language" content="en-gb" />
 
-  <link rel="alternate" hreflang="en-gb" href="https://leejacking.github.io/posts/1hello/" title="English" />
+  <link rel="alternate" hreflang="en-gb" href="http://localhost:1313/posts/1hello/" title="English" />
 
 
 
@@ -31,7 +31,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:article:published_time" content=2024-08-29T14:08:28&#43;0800 />
     <meta property="article:published_time" content=2024-08-29T14:08:28&#43;0800 />
-    <meta property="og:url" content="https://leejacking.github.io/posts/1hello/" />
+    <meta property="og:url" content="http://localhost:1313/posts/1hello/" />
 
     
     <meta property="og:article:author" content="Lee Jacking" />
@@ -46,14 +46,14 @@
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "Hello",
+        "headline": "使用Hugo和Github Pages搭建博客",
         "author": {
         "@type": "Person",
         "name": ""
         },
         "datePublished": "2024-08-29",
         "description": "",
-        "wordCount":  9 ,
+        "wordCount":  45 ,
         "mainEntityOfPage": "True",
         "dateModified": "2024-08-29",
         "image": {
@@ -71,10 +71,17 @@
 <meta name="generator" content="Hugo 0.133.1">
 
     
-    <meta property="og:url" content="https://leejacking.github.io/posts/1hello/">
+    <meta property="og:url" content="http://localhost:1313/posts/1hello/">
   <meta property="og:site_name" content="Lee Jacking">
-  <meta property="og:title" content="Hello">
-  <meta property="og:description" content="This is my first step to write a blog.">
+  <meta property="og:title" content="使用Hugo和Github Pages搭建博客">
+  <meta property="og:description" content="1 使用Hugo本地搭建和调试 Hugo 是用 Go 语言写的静态网站生成器，里面提供各类博客模板，官网是https://gohugo.io/。
+1.1 开始搭建 创建一个Hugo工程文件夹，例如: F:\Blog。 在命令行中，输入命令：
+cd F:\Blog hugo new site blog 1.2 安装主题 根据主题模板中的提示一步一步安装。关键步骤是修改Blog\blog\hugo.toml文件。
+1.3 创建博客文章 用 Hugo 命令创建一篇文章:
+cd blog\content\en\posts hugo new Hello.md 在文件夹Blog\blog\content\en\posts下就可以看到新建好的文件了，打开后可以进行内容编辑。
+1.4 本地预览调试 执行Hugo命令可以在本地预览网站的内容和效果：
+hugo server 命令运行成功后，可以在 http://localhost:1313/ 中预览网站。如果在线修改Hello.md内容，网页也会实时更新。
+2 发布到Github Pages仓库 本地调试完成后，将Blog\blog\public下的内容复制到git repo，通过VS Code的git发布到远程即可。">
   <meta property="og:locale" content="en_gb">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -85,13 +92,20 @@
     
     
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Hello">
-  <meta name="twitter:description" content="This is my first step to write a blog.">
+  <meta name="twitter:title" content="使用Hugo和Github Pages搭建博客">
+  <meta name="twitter:description" content="1 使用Hugo本地搭建和调试 Hugo 是用 Go 语言写的静态网站生成器，里面提供各类博客模板，官网是https://gohugo.io/。
+1.1 开始搭建 创建一个Hugo工程文件夹，例如: F:\Blog。 在命令行中，输入命令：
+cd F:\Blog hugo new site blog 1.2 安装主题 根据主题模板中的提示一步一步安装。关键步骤是修改Blog\blog\hugo.toml文件。
+1.3 创建博客文章 用 Hugo 命令创建一篇文章:
+cd blog\content\en\posts hugo new Hello.md 在文件夹Blog\blog\content\en\posts下就可以看到新建好的文件了，打开后可以进行内容编辑。
+1.4 本地预览调试 执行Hugo命令可以在本地预览网站的内容和效果：
+hugo server 命令运行成功后，可以在 http://localhost:1313/ 中预览网站。如果在线修改Hello.md内容，网页也会实时更新。
+2 发布到Github Pages仓库 本地调试完成后，将Blog\blog\public下的内容复制到git repo，通过VS Code的git发布到远程即可。">
 
 
     
 
-    <link rel="canonical" href="https://leejacking.github.io/posts/1hello/">
+    <link rel="canonical" href="http://localhost:1313/posts/1hello/">
     <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
     <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
@@ -105,7 +119,7 @@
 
 
 
-<link rel="manifest" href="https://leejacking.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
 <meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
@@ -114,18 +128,14 @@
     
     <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
-    
-    
-  
-
-</head>
+    </head>
 <body data-theme = "dark" class="notransition">
 
-<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="https://leejacking.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -179,7 +189,7 @@ stroke-linejoin="round" class="feather feather-home">
     <main class="page-content" aria-label="Content">
         <article>
             <header class="header">
-                <h1 class="header-title">Hello</h1>
+                <h1 class="header-title">使用Hugo和Github Pages搭建博客</h1>
                 
                 
                 <div class="post-meta">
@@ -191,11 +201,42 @@ stroke-linejoin="round" class="feather feather-home">
     
     <details class="toc" ZgotmplZ>
         <summary><b>Table of Contents</b></summary>
-        <nav id="TableOfContents"></nav>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-使用hugo本地搭建和调试">1 使用Hugo本地搭建和调试</a>
+      <ul>
+        <li><a href="#11-开始搭建">1.1 开始搭建</a></li>
+        <li><a href="#12-安装主题">1.2 安装主题</a></li>
+        <li><a href="#13-创建博客文章">1.3 创建博客文章</a></li>
+        <li><a href="#14-本地预览调试">1.4 本地预览调试</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-发布到github-pages仓库">2 发布到Github Pages仓库</a></li>
+  </ul>
+</nav>
     </details>
             <div class="page-content">
-                <p>This is my first step to write a blog.</p>
-<p><img alt="Dog" src="dog.png"></p>
+                <p><img alt="Dog" src="dog.png"></p>
+<h2 id="1-使用hugo本地搭建和调试">1 使用Hugo本地搭建和调试</h2>
+<p>Hugo 是用 Go 语言写的静态网站生成器，里面提供各类博客模板，官网是https://gohugo.io/。</p>
+<h3 id="11-开始搭建">1.1 开始搭建</h3>
+<p>创建一个Hugo工程文件夹，例如: <code>F:\Blog</code>。
+在命令行中，输入命令：</p>
+<pre tabindex="0"><code>cd F:\Blog
+hugo new site blog
+</code></pre><h3 id="12-安装主题">1.2 安装主题</h3>
+<p>根据主题<a href="https://themes.gohugo.io/themes/hugo-blog-awesome/">模板</a>中的提示一步一步安装。关键步骤是修改<code>Blog\blog\hugo.toml</code>文件。</p>
+<h3 id="13-创建博客文章">1.3 创建博客文章</h3>
+<p>用 Hugo 命令创建一篇文章:</p>
+<pre tabindex="0"><code>cd blog\content\en\posts
+hugo new Hello.md
+</code></pre><p>在文件夹<code>Blog\blog\content\en\posts</code>下就可以看到新建好的文件了，打开后可以进行内容编辑。</p>
+<h3 id="14-本地预览调试">1.4 本地预览调试</h3>
+<p>执行Hugo命令可以在本地预览网站的内容和效果：</p>
+<pre tabindex="0"><code>hugo server
+</code></pre><p>命令运行成功后，可以在 http://localhost:1313/ 中预览网站。如果在线修改<code>Hello.md</code>内容，网页也会实时更新。</p>
+<h2 id="2-发布到github-pages仓库">2 发布到Github Pages仓库</h2>
+<p>本地调试完成后，将<code>Blog\blog\public</code>下的内容复制到git repo，通过VS Code的git发布到远程即可。</p>
 
             </div>
         </article></main>
@@ -216,7 +257,7 @@ stroke-linejoin="round" class="feather feather-home">
 </a>
 </div>
     <small class="footer_copyright">
-        © 2024 Lee Jacking.
+        © 2025 Lee Jacking.
         Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
     </small>
 </footer><a href="#" title="Go to top" id="totop">
@@ -245,7 +286,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script src="https://leejacking.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 
