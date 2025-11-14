@@ -68,8 +68,10 @@
       .cw-header h2 {font-size:16px; margin:0; display:flex; align-items:center; gap:6px; font-weight:600;}
       .cw-main {display:flex; flex-wrap:wrap;}
       .cw-weather {flex:0 0 260px; padding:16px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; border-radius:0 0 0 12px; display:flex; flex-direction:column; gap:6px; position:relative;}
-      .cw-temp {font-size:40px; font-weight:700; line-height:1;}
-      .cw-desc {font-size:13px; opacity:.9;}
+  .cw-icon {font-size:46px; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
+  .cw-temp {font-size:40px; font-weight:700; line-height:1;}
+  .cw-temp-row {display:flex; align-items:center; gap:10px;}
+  /* 已移除 .cw-desc 相关元素 */
       .cw-details {display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:8px; font-size:12px;}
       .cw-refresh {position:absolute; top:12px; right:12px; background:rgba(255,255,255,.25); border:none; color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px;}
       .cw-calendar {flex:1; padding:16px; min-width:320px;}
@@ -93,13 +95,10 @@
         <section class="cw-weather" id="cwWeather">
           <button class="cw-refresh" title="刷新" id="cwRefresh">↻</button>
           <h3>南京市江宁区</h3>
-          <div class="cw-temp" id="cwTemp">--°</div>
-          <div class="cw-desc" id="cwDesc">加载中...</div>
+          <div class="cw-temp-row"><div class="cw-temp" id="cwTemp">--°</div><div class="cw-icon" id="cwIcon" aria-hidden="true">❓</div></div>
           <div class="cw-details" id="cwDetails">
             <div><span>体感:</span> <span id="cwFeels">--°</span></div>
-            <div><span>湿度:</span> <span id="cwHum">--%</span></div>
             <div><span>风速:</span> <span id="cwWind">-- km/h</span></div>
-            <div><span>气压:</span> <span id="cwPressure">-- hPa</span></div>
           </div>
           <div style="font-size:11px; opacity:.8;" id="cwUpdate">更新时间: --:--</div>
         </section>
@@ -126,7 +125,19 @@
   shadow.querySelectorAll('.cw-nav button').forEach(b=>{b.onclick=()=>{const a=b.getAttribute('data-action'); if(a==='prev') state.current.setMonth(state.current.getMonth()-1); else if(a==='next') state.current.setMonth(state.current.getMonth()+1); else if(a==='today'){state.current=new Date(); state.selected=new Date();} renderCalendar(); renderSelected();};});
   shadow.getElementById('cwAddEventBtn').onclick=()=>openAddModal();
   function openAddModal(){const backdrop=document.createElement('div'); backdrop.className='cw-modal-backdrop'; backdrop.innerHTML=`<div class="cw-modal"><h3>添加事件</h3><form id="cwAddForm"><div class="cw-form-group"><label>标题</label><input required name="title"/></div><div class="cw-form-group"><label>日期</label><input required type="date" name="date" value="${state.selected?dateKey(state.selected):dateKey(new Date())}" /></div><div class="cw-form-group"><label>类型</label><select name="type"><option value="work">工作</option><option value="personal">个人</option><option value="meeting">会议</option><option value="important">重要</option><option value="other">其他</option></select></div><div class="cw-form-group"><label>描述</label><textarea name="description" rows="3"></textarea></div><div class="cw-modal-actions"><button type="button" class="cw-btn secondary" data-close>取消</button><button type="submit" class="cw-btn primary" style="flex:1;">添加</button></div></form></div>`; document.body.appendChild(backdrop); backdrop.addEventListener('click',e=>{if(e.target===backdrop) backdrop.remove();}); backdrop.querySelector('[data-close]').onclick=()=>backdrop.remove(); backdrop.querySelector('#cwAddForm').onsubmit=e=>{e.preventDefault(); const fd=new FormData(e.target); const ev={id:Date.now(), title:fd.get('title'), type:fd.get('type'), description:fd.get('description'), createdAt:new Date().toISOString()}; const d=fd.get('date'); if(!state.events[d]) state.events[d]=[]; state.events[d].push(ev); localStorage.setItem('cwEvents', JSON.stringify(state.events)); state.selected=new Date(d); state.current=new Date(d); renderCalendar(); renderSelected(); backdrop.remove();}; }
-  async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwDesc').textContent=data.now.text; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; shadow.getElementById('cwHum').textContent=data.now.humidity+'%'; shadow.getElementById('cwWind').textContent=data.now.windSpeed+' km/h'; shadow.getElementById('cwPressure').textContent=data.now.pressure+' hPa'; const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'); } else {shadow.getElementById('cwDesc').textContent='无法获取天气';}} catch(e){shadow.getElementById('cwDesc').textContent='网络错误';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
+  // 根据和风天气代码返回 emoji 图标
+  function getWeatherIcon(code){
+    const map={
+      '100':'☀️','101':'⛅','102':'⛅','103':'⛅','104':'☁️',
+      '300':'🌦️','301':'⛈️','305':'🌧️','306':'🌧️','307':'🌧️','308':'🌧️','309':'🌧️','310':'🌧️','311':'🌧️','312':'🌧️','313':'🌧️',
+      '400':'🌨️','401':'🌨️','402':'🌨️','403':'🌨️','404':'🌨️','405':'🌨️','406':'🌨️','407':'🌨️',
+      '500':'🌫️','501':'🌫️','502':'🌫️','503':'🌫️','504':'🌫️'
+    }; return map[String(code)]||'❓';
+  }
+  async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; shadow.getElementById('cwWind').textContent=data.now.windSpeed+' km/h'; const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'); }} catch(e){/* 忽略错误，保留原始占位 */} finally{refresh.disabled=false; refresh.style.opacity='1';}}
+  // 在成功获取后设置图标
+  const origFetchWeather=fetchWeather;
+  fetchWeather=async function(){await origFetchWeather(); try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwIcon').textContent=getWeatherIcon(data.now.icon);}} catch(_){/* 忽略图标更新错误 */}}
   shadow.getElementById('cwRefresh').onclick=fetchWeather;
   fetchWeather(); renderCalendar(); renderSelected();
 })();
