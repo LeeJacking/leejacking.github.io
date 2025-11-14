@@ -185,6 +185,9 @@ stroke-linejoin="round" class="feather feather-home">
     </nav>
 </div>
 
+<!-- Calendar & Weather Widget (Shadow DOM encapsulated) -->
+<div id="calendar-weather-widget"></div>
+
 <div class="wrapper post">
     <main class="page-content" aria-label="Content">
         <article>
@@ -286,7 +289,124 @@ hugo new Hello.md
 
 
     
-    <script async src="http://localhost:1313/js/main.js" ></script>
+        <script async src="http://localhost:1313/js/main.js" ></script>
+        <script>
+        (function initCalendarWeatherWidget(){
+                const host = document.getElementById('calendar-weather-widget');
+                if(!host) return;
+                const shadow = host.attachShadow({mode:'open'});
+                shadow.innerHTML = `
+                        <style>
+                                * {box-sizing:border-box;}
+                                :host {display:block;}
+                                .cw-container {margin:20px auto; max-width:1100px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.06); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}
+                                .cw-header {display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid #e5e7eb; background:#fafafa;}
+                                .cw-header h2 {font-size:16px; margin:0; display:flex; align-items:center; gap:6px; font-weight:600;}
+                                .cw-main {display:flex; flex-wrap:wrap;}
+                                .cw-weather {flex:0 0 260px; padding:16px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; border-radius:0 0 0 12px; display:flex; flex-direction:column; gap:6px; position:relative;}
+                                .cw-weather h3 {margin:0 0 4px; font-size:15px; font-weight:600;}
+                                .cw-temp {font-size:40px; font-weight:700; line-height:1;}
+                                .cw-desc {font-size:13px; opacity:.9;}
+                                .cw-details {display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:8px; font-size:12px;}
+                                .cw-details div span:first-child {opacity:.8;}
+                                .cw-refresh {position:absolute; top:12px; right:12px; background:rgba(255,255,255,.25); border:none; color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px;}
+                                .cw-refresh:active {transform:rotate(180deg);}
+                                .cw-calendar {flex:1; padding:16px; min-width:320px;}
+                                .cw-nav {display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+                                .cw-nav button {border:1px solid #d1d5db; background:#fff; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:13px;}
+                                .cw-nav button:active {background:#f3f4f6;}
+                                .cw-month-label {font-weight:600; font-size:14px;}
+                                .cw-weekdays, .cw-grid {display:grid; grid-template-columns:repeat(7,1fr);}
+                                .cw-weekdays div {text-align:center; font-size:12px; padding:4px 0; font-weight:600; color:#6b7280;}
+                                .cw-day {border:1px solid #f1f5f9; min-height:74px; padding:4px; font-size:11px; position:relative; cursor:pointer; background:#fff; display:flex; flex-direction:column; gap:2px;}
+                                .cw-day.other {background:#f8fafc; color:#94a3b8;}
+                                .cw-day.today {outline:2px solid #6366f1; outline-offset:-2px;}
+                                .cw-day.selected {background:#eef2ff;}
+                                .cw-events {display:flex; flex-direction:column; gap:2px; margin-top:auto;}
+                                .cw-event {font-size:10px; padding:2px 4px; border-radius:4px; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+                                .cw-event.work {background:#3b82f6;}
+                                .cw-event.personal {background:#10b981;}
+                                .cw-event.meeting {background:#f59e0b;}
+                                .cw-event.important {background:#ef4444;}
+                                .cw-event.other {background:#8b5cf6;}
+                                .cw-selected-panel {flex:1 1 100%; border-top:1px solid #e5e7eb; padding:12px 16px; background:#fafafa;}
+                                .cw-selected-title {font-size:14px; font-weight:600; margin:0 0 8px;}
+                                .cw-no-events {font-size:12px; color:#6b7280;}
+                                .cw-selected-event {background:#fff; border:1px solid #e5e7eb; padding:8px 10px; border-radius:8px; margin-bottom:8px; font-size:12px; position:relative;}
+                                .cw-selected-event:last-child {margin-bottom:0;}
+                                .cw-selected-event .type-dot {width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px;}
+                                .cw-add-btn {margin-top:6px; background:#6366f1; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;}
+                                .cw-add-btn:active {background:#4f46e5;}
+                                .cw-modal-backdrop {position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; z-index:10000;}
+                                .cw-modal {background:#fff; width:90%; max-width:420px; border-radius:12px; padding:16px 18px; box-shadow:0 8px 24px rgba(0,0,0,.15); animation:fadeIn .25s ease; font-size:14px;}
+                                .cw-modal h3 {margin:0 0 12px; font-size:16px;}
+                                .cw-form-group {margin-bottom:12px; display:flex; flex-direction:column; gap:4px;}
+                                .cw-form-group label {font-size:12px; font-weight:600;}
+                                .cw-form-group input, .cw-form-group select, .cw-form-group textarea {padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; font-size:13px; font-family:inherit;}
+                                .cw-modal-actions {display:flex; gap:10px; margin-top:4px;}
+                                .cw-btn {border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:13px;}
+                                .cw-btn.primary {background:#6366f1; color:#fff;}
+                                .cw-btn.secondary {background:#e5e7eb;}
+                                .cw-btn.danger {background:#ef4444; color:#fff;}
+                                .cw-btn.primary:active {background:#4f46e5;}
+                                .cw-btn.secondary:active {background:#d1d5db;}
+                                .cw-btn.danger:active {background:#dc2626;}
+                                @media (max-width:900px){.cw-main{flex-direction:column;} .cw-weather{border-radius:0; flex:1;}}
+                                @keyframes fadeIn {from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+                        </style>
+                        <div class="cw-container" aria-label="Calendar and Weather">
+                            <div class="cw-header">
+                                <h2>📅 日历 / 天气</h2>
+                                <div class="cw-nav">
+                                    <button type="button" data-action="prev">◀</button>
+                                    <span class="cw-month-label" id="cwMonthLabel"></span>
+                                    <button type="button" data-action="next">▶</button>
+                                    <button type="button" data-action="today">今天</button>
+                                </div>
+                            </div>
+                            <div class="cw-main">
+                                <section class="cw-weather" id="cwWeather">
+                                    <button class="cw-refresh" title="刷新" id="cwRefresh">↻</button>
+                                    <h3>南京市江宁区</h3>
+                                    <div class="cw-temp" id="cwTemp">--°</div>
+                                    <div class="cw-desc" id="cwDesc">加载中...</div>
+                                    <div class="cw-details" id="cwDetails">
+                                        <div><span>体感:</span> <span id="cwFeels">--°</span></div>
+                                        <div><span>湿度:</span> <span id="cwHum">--%</span></div>
+                                        <div><span>风速:</span> <span id="cwWind">-- km/h</span></div>
+                                        <div><span>气压:</span> <span id="cwPressure">-- hPa</span></div>
+                                    </div>
+                                    <div style="font-size:11px; opacity:.8;" id="cwUpdate">更新时间: --:--</div>
+                                </section>
+                                <section class="cw-calendar">
+                                    <div class="cw-weekdays" id="cwWeekdays"></div>
+                                    <div class="cw-grid" id="cwGrid"></div>
+                                </section>
+                                <section class="cw-selected-panel" id="cwSelectedPanel" style="display:none;">
+                                    <h3 class="cw-selected-title" id="cwSelectedTitle">选择日期</h3>
+                                    <div id="cwSelectedEvents"></div>
+                                    <button type="button" class="cw-add-btn" id="cwAddEventBtn">➕ 添加事件</button>
+                                </section>
+                            </div>
+                        </div>
+                `;
+                const state = { current:new Date(), selected:null, events: JSON.parse(localStorage.getItem('cwEvents')||'{}') };
+                const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+                const weekdayNames=['周日','周一','周二','周三','周四','周五','周六'];
+                const gridEl=shadow.getElementById('cwGrid'); const monthLabelEl=shadow.getElementById('cwMonthLabel'); const weekdaysEl=shadow.getElementById('cwWeekdays');
+                weekdaysEl.innerHTML=weekdayNames.map(w=>`<div>${w}</div>`).join('');
+                function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+                function eventColor(t){return {work:'#3b82f6',personal:'#10b981',meeting:'#f59e0b',important:'#ef4444',other:'#8b5cf6'}[t]||'#8b5cf6';}
+                function renderCalendar(){const y=state.current.getFullYear(); const m=state.current.getMonth(); monthLabelEl.textContent=`${y}年 ${monthNames[m]}`; const first=new Date(y,m,1).getDay(); const dim=new Date(y,m+1,0).getDate(); const prevDays=new Date(y,m,0).getDate(); const cells=[]; for(let i=first-1;i>=0;i--)cells.push({d:new Date(y,m-1,prevDays-i),other:true}); for(let d=1;d<=dim;d++)cells.push({d:new Date(y,m,d)}); while(cells.length<42){cells.push({d:new Date(y,m+1,cells.length-(first+dim)+1),other:true});} gridEl.innerHTML=''; cells.forEach(c=>{const div=document.createElement('div'); div.className='cw-day'+(c.other?' other':''); const today=new Date(); if(c.d.toDateString()===today.toDateString()) div.classList.add('today'); if(state.selected && c.d.toDateString()===state.selected.toDateString()) div.classList.add('selected'); div.innerHTML=`<div style="font-weight:600;">${c.d.getDate()}</div>`; const evWrap=document.createElement('div'); evWrap.className='cw-events'; const evs=state.events[dateKey(c.d)]||[]; evs.slice(0,3).forEach(ev=>{const eDiv=document.createElement('div'); eDiv.className='cw-event '+ev.type; eDiv.textContent=ev.title; eDiv.title=ev.title; eDiv.onclick=(e)=>{e.stopPropagation(); showEventModal(ev,c.d);}; evWrap.appendChild(eDiv);}); if(evs.length>3){const more=document.createElement('div'); more.style.cssText='font-size:10px;color:#6b7280;'; more.textContent=`+${evs.length-3} 更多`; evWrap.appendChild(more);} div.appendChild(evWrap); div.onclick=()=>{state.selected=c.d; renderCalendar(); renderSelected();}; gridEl.appendChild(div);}); }
+                function renderSelected(){const panel=shadow.getElementById('cwSelectedPanel'); if(!state.selected){panel.style.display='none'; return;} panel.style.display='block'; const titleEl=shadow.getElementById('cwSelectedTitle'); const today=new Date(); const tomorrow=new Date(); tomorrow.setDate(today.getDate()+1); if(state.selected.toDateString()===today.toDateString()) titleEl.textContent='今天'; else if(state.selected.toDateString()===tomorrow.toDateString()) titleEl.textContent='明天'; else titleEl.textContent=`${state.selected.getFullYear()}年${state.selected.getMonth()+1}月${state.selected.getDate()}日 ${weekdayNames[state.selected.getDay()]}`; const listEl=shadow.getElementById('cwSelectedEvents'); const evs=state.events[dateKey(state.selected)]||[]; if(evs.length===0){listEl.innerHTML='<div class="cw-no-events">这个日期没有事件</div>'; return;} listEl.innerHTML=evs.map(ev=>`<div class="cw-selected-event"><div><span class="type-dot" style="background:${eventColor(ev.type)}"></span>${ev.title}</div><div style="margin-top:4px;font-size:11px;color:#6b7280;">${ev.description?ev.description:''}</div><div style="display:flex; gap:6px; margin-top:6px;"><button class="cw-btn danger" data-del="${ev.id}" style="font-size:11px;">删除</button></div></div>`).join(''); listEl.querySelectorAll('button[data-del]').forEach(btn=>{btn.onclick=()=>{const id=Number(btn.getAttribute('data-del')); const k=dateKey(state.selected); state.events[k]=state.events[k].filter(e=>e.id!==id); if(state.events[k].length===0) delete state.events[k]; localStorage.setItem('cwEvents', JSON.stringify(state.events)); renderCalendar(); renderSelected();};}); }
+                shadow.querySelectorAll('.cw-nav button').forEach(b=>{b.onclick=()=>{const a=b.getAttribute('data-action'); if(a==='prev') state.current.setMonth(state.current.getMonth()-1); else if(a==='next') state.current.setMonth(state.current.getMonth()+1); else if(a==='today'){state.current=new Date(); state.selected=new Date();} renderCalendar(); renderSelected();};});
+                shadow.getElementById('cwAddEventBtn').onclick=()=>openAddModal();
+                function openAddModal(){const backdrop=document.createElement('div'); backdrop.className='cw-modal-backdrop'; backdrop.innerHTML=`<div class="cw-modal"><h3>添加事件</h3><form id="cwAddForm"><div class="cw-form-group"><label>标题</label><input required name="title"/></div><div class="cw-form-group"><label>日期</label><input required type="date" name="date" value="${state.selected?dateKey(state.selected):dateKey(new Date())}" /></div><div class="cw-form-group"><label>类型</label><select name="type"><option value="work">工作</option><option value="personal">个人</option><option value="meeting">会议</option><option value="important">重要</option><option value="other">其他</option></select></div><div class="cw-form-group"><label>描述</label><textarea name="description" rows="3"></textarea></div><div class="cw-modal-actions"><button type="button" class="cw-btn secondary" data-close>取消</button><button type="submit" class="cw-btn primary" style="flex:1;">添加</button></div></form></div>`; document.body.appendChild(backdrop); backdrop.addEventListener('click',e=>{if(e.target===backdrop) backdrop.remove();}); backdrop.querySelector('[data-close]').onclick=()=>backdrop.remove(); backdrop.querySelector('#cwAddForm').onsubmit=e=>{e.preventDefault(); const fd=new FormData(e.target); const ev={id:Date.now(), title:fd.get('title'), type:fd.get('type'), description:fd.get('description'), createdAt:new Date().toISOString()}; const d=fd.get('date'); if(!state.events[d]) state.events[d]=[]; state.events[d].push(ev); localStorage.setItem('cwEvents', JSON.stringify(state.events)); state.selected=new Date(d); state.current=new Date(d); renderCalendar(); renderSelected(); backdrop.remove();}; }
+                async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwDesc').textContent=data.now.text; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; shadow.getElementById('cwHum').textContent=data.now.humidity+'%'; shadow.getElementById('cwWind').textContent=data.now.windSpeed+' km/h'; shadow.getElementById('cwPressure').textContent=data.now.pressure+' hPa'; const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'); } else {shadow.getElementById('cwDesc').textContent='无法获取天气';}} catch(e){shadow.getElementById('cwDesc').textContent='网络错误';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
+                shadow.getElementById('cwRefresh').onclick=fetchWeather;
+                fetchWeather(); renderCalendar(); renderSelected();
+        })();
+        </script>
 
     
 
