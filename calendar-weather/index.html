@@ -126,6 +126,7 @@
             <div><span>体感:</span> <span id="cwFeels">--°</span></div>
             <div><span>风速:</span> <span id="cwWind">-- km/h</span></div>
           </div>
+          <div style="font-size:11px; opacity:.8;" id="cwClock">当前时间: --:--</div>
           <div style="font-size:11px; opacity:.8;" id="cwUpdate">更新时间: --:--</div>
         </section>
         <section class="cw-calendar">
@@ -161,8 +162,11 @@
     }; return map[String(code)]||'❓';
   }
   async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); if(!res.ok) throw new Error('网络错误'); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; shadow.getElementById('cwWind').textContent=data.now.windSpeed+' km/h'; shadow.getElementById('cwIcon').textContent=getWeatherIcon(data.now.icon); const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');} else {shadow.getElementById('cwUpdate').textContent='天气数据为空';}} catch(e){shadow.getElementById('cwUpdate').textContent='天气获取失败';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
+  function updateClock(){const now=new Date(); const hh=String(now.getHours()).padStart(2,'0'); const mm=String(now.getMinutes()).padStart(2,'0'); const clockEl=shadow.getElementById('cwClock'); if(clockEl) clockEl.textContent='当前时间: '+hh+':'+mm;}
   shadow.getElementById('cwRefresh').onclick=fetchWeather;
-  fetchWeather(); renderCalendar(); renderSelected();
+  fetchWeather(); updateClock(); renderCalendar(); renderSelected();
+  setInterval(updateClock, 60000); // 每分钟更新时间
+  setInterval(fetchWeather, 3600000); // 每小时自动刷新天气
 })();
 </script>
 </body>
