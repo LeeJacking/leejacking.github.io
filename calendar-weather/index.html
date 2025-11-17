@@ -42,11 +42,7 @@
   </nav>
 </nav>
 <main class="page-content" aria-label="Content">
-    <header class="header">
-        <h1 class="header-title">日历与天气</h1>
-        <div class="post-meta"><time datetime="2025-11-14">2025-11-14</time></div>
-    </header>
-    <div id="calendar-weather-widget"></div>
+  <div id="calendar-weather-widget"></div>
 </main>
 <footer class="footer">
     <span class="footer_item"></span>&nbsp;
@@ -75,7 +71,7 @@
       * {box-sizing:border-box;} :host {display:block;}
       .cw-container {margin:20px auto; max-width:1100px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.06); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}
       .cw-header {display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid #e5e7eb; background:#fafafa;}
-      .cw-header h2 {font-size:16px; margin:0; display:flex; align-items:center; gap:6px; font-weight:600;}
+      .cw-header h2 {margin:0; display:flex; align-items:center; gap:8px; font-weight:600; font-family:'Palatino Linotype','Book Antiqua',Palatino,'Times New Roman',serif; font-style:italic; font-size:17px; letter-spacing:.6px;}
       .cw-main {display:flex; flex-wrap:wrap;}
       .cw-weather {flex:0 0 260px; padding:16px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; border-radius:0 0 0 12px; display:flex; flex-direction:column; gap:6px; position:relative;}
   .cw-icon {font-size:46px; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
@@ -109,12 +105,16 @@
     </style>
     <div class="cw-container" aria-label="Calendar and Weather">
       <div class="cw-header">
-        <h2>📅 日历 / 天气</h2>
         <div class="cw-nav">
           <button type="button" data-action="prev">◀</button>
           <span class="cw-month-label" id="cwMonthLabel"></span>
           <button type="button" data-action="next">▶</button>
           <button type="button" data-action="today">今天</button>
+        </div>
+        <h2 class="cw-verse">This is the day the LORD has made; we will rejoice and be glad in it.</h2>
+        <div class="cw-font">
+          <button id="fontDecrease" type="button" title="字体缩小" style="padding:4px 8px; border:1px solid #6366f1; background:#eef2ff; color:#3730a3; border-radius:4px; cursor:pointer; font-size:12px; line-height:1;">A-</button>
+          <button id="fontIncrease" type="button" title="字体放大" style="padding:4px 8px; border:1px solid #6366f1; background:#eef2ff; color:#3730a3; border-radius:4px; cursor:pointer; font-size:12px; line-height:1;">A+</button>
         </div>
       </div>
       <div class="cw-main">
@@ -124,7 +124,7 @@
           <div class="cw-temp-row"><div class="cw-temp" id="cwTemp">--°</div><div class="cw-icon" id="cwIcon" aria-hidden="true">❓</div></div>
           <div class="cw-details" id="cwDetails">
             <div><span>体感:</span> <span id="cwFeels">--°</span></div>
-            <div><span>风速:</span> <span id="cwWind">-- km/h</span></div>
+            <div><span>风速:</span> <span id="cwWind">--级</span></div>
           </div>
           <div style="font-size:11px; opacity:.8;" id="cwClock">当前时间: --:--</div>
           <div style="font-size:11px; opacity:.8;" id="cwUpdate">更新时间: --:--</div>
@@ -141,6 +141,16 @@
       </div>
     </div>`;
   const state={current:new Date(),selected:null,events:JSON.parse(localStorage.getItem('cwEvents')||'{}')};
+  // 字体缩放控制（移动到 shadow 生成后）
+  let cwScale=1;
+  function applyScale(){
+    host.style.transform=`scale(${cwScale})`;
+    host.style.transformOrigin='top left';
+  }
+  const incBtn=shadow.getElementById('fontIncrease');
+  const decBtn=shadow.getElementById('fontDecrease');
+  if(incBtn) incBtn.onclick=()=>{cwScale=Math.min(cwScale+0.1,2); applyScale();};
+  if(decBtn) decBtn.onclick=()=>{cwScale=Math.max(cwScale-0.1,0.6); applyScale();};
   const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
   const weekdayNames=['周日','周一','周二','周三','周四','周五','周六'];
   const gridEl=shadow.getElementById('cwGrid'); const monthLabelEl=shadow.getElementById('cwMonthLabel'); const weekdaysEl=shadow.getElementById('cwWeekdays');
@@ -155,13 +165,32 @@
   function showEventModal(ev,date){const backdrop=document.createElement('div'); backdrop.className='cw-modal-backdrop'; const desc=(ev.description||'无描述'); const dt=dateKey(date); backdrop.innerHTML=`<div class="cw-modal"><h3>事件详情</h3><div style="margin-bottom:10px;font-size:13px;">日期：${dt}</div><div style="margin-bottom:10px;font-size:13px;">标题：<strong>${ev.title}</strong></div><div style="margin-bottom:12px;font-size:13px;">类型：<span class="type-dot" style="background:${eventColor(ev.type)}"></span>${ev.type}</div><div style="margin-bottom:12px;font-size:13px; white-space:pre-line;">描述：${desc || '无'}</div><div class="cw-modal-actions"><button type="button" class="cw-btn secondary" data-close>关闭</button><button type="button" class="cw-btn danger" data-del>删除</button></div></div>`; document.body.appendChild(backdrop); backdrop.addEventListener('click',e=>{if(e.target===backdrop) backdrop.remove();}); backdrop.querySelector('[data-close]').onclick=()=>backdrop.remove(); backdrop.querySelector('[data-del]').onclick=()=>{const k=dateKey(date); state.events[k]= (state.events[k]||[]).filter(x=>x.id!==ev.id); if(state.events[k]&&state.events[k].length===0) delete state.events[k]; localStorage.setItem('cwEvents', JSON.stringify(state.events)); backdrop.remove(); renderCalendar(); renderSelected();}; }
   function getWeatherIcon(code){
     const map={
-      '100':'☀️','101':'⛅','102':'⛅','103':'⛅','104':'☁️',
-      '300':'🌦️','301':'⛈️','305':'🌧️','306':'🌧️','307':'🌧️','308':'🌧️','309':'🌧️','310':'🌧️','311':'🌧️','312':'🌧️','313':'🌧️',
+      // 晴/多云（日/夜）
+      '100':'☀️','101':'⛅','102':'🌤️','103':'🌥️','104':'☁️',
+      '150':'🌙','151':'☁️','152':'🌙','153':'☁️',
+      // 雨（含夜间代码）
+      '300':'🌦️','301':'🌧️','302':'⛈️','303':'⛈️','304':'⛈️',
+      '305':'🌧️','306':'🌧️','307':'🌧️','308':'🌧️','309':'🌦️','310':'🌧️','311':'🌧️','312':'🌧️','313':'🌧️',
+      '314':'🌧️','315':'🌧️','316':'🌧️','317':'🌧️','318':'🌧️',
+      '350':'🌦️','351':'🌧️','399':'🌧️',
+      // 雪 / 夹雨雪
       '400':'🌨️','401':'🌨️','402':'🌨️','403':'🌨️','404':'🌨️','405':'🌨️','406':'🌨️','407':'🌨️',
-      '500':'🌫️','501':'🌫️','502':'🌫️','503':'🌫️','504':'🌫️'
+      '408':'🌨️','409':'🌨️','410':'🌨️','456':'🌨️','457':'🌨️','499':'🌨️',
+      // 雾 / 霾 / 沙尘
+      '500':'🌫️','501':'🌫️','502':'🌫️','503':'🏜️','504':'💨',
+      '507':'🌪️','508':'🌪️','509':'🌫️','510':'🌫️','511':'🌫️','512':'🌫️','513':'🌫️','514':'🌫️','515':'🌫️',
+      // 极端 / 其它
+      '900':'🔥','901':'🥶','999':'❓'
     }; return map[String(code)]||'❓';
   }
-  async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); if(!res.ok) throw new Error('网络错误'); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; shadow.getElementById('cwWind').textContent=data.now.windSpeed+' km/h'; shadow.getElementById('cwIcon').textContent=getWeatherIcon(data.now.icon); const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');} else {shadow.getElementById('cwUpdate').textContent='天气数据为空';}} catch(e){shadow.getElementById('cwUpdate').textContent='天气获取失败';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
+  // 将 km/h 风速转换为 Beaufort 风力等级 (0-12级)
+  function windLevel(kmh){
+    const mps=kmh/3.6; // 转换为 m/s
+    const bounds=[0.3,1.6,3.4,5.5,8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7];
+    for(let i=0;i<bounds.length;i++) if(mps<bounds[i]) return i;
+    return 12;
+  }
+  async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); if(!res.ok) throw new Error('网络错误'); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; const ws=parseFloat(data.now.windSpeed); shadow.getElementById('cwWind').textContent=windLevel(ws)+'级'; shadow.getElementById('cwIcon').textContent=getWeatherIcon(data.now.icon); const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');} else {shadow.getElementById('cwUpdate').textContent='天气数据为空';}} catch(e){shadow.getElementById('cwUpdate').textContent='天气获取失败';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
   function updateClock(){const now=new Date(); const hh=String(now.getHours()).padStart(2,'0'); const mm=String(now.getMinutes()).padStart(2,'0'); const clockEl=shadow.getElementById('cwClock'); if(clockEl) clockEl.textContent='当前时间: '+hh+':'+mm;}
   shadow.getElementById('cwRefresh').onclick=fetchWeather;
   fetchWeather(); updateClock(); renderCalendar(); renderSelected();
