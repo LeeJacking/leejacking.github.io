@@ -1,0 +1,332 @@
+/* 自定义样式 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+}
+
+/* 标签页样式 */
+.tab-btn {
+    color: #6b7280;
+    background: transparent;
+}
+
+.tab-btn:hover {
+    background: #f3f4f6;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* 日历单元格 */
+.calendar-day {
+    min-height: 90px;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-day:hover {
+    background: #f3f4f6;
+    transform: translateY(-1px);
+}
+
+.calendar-day.other-month {
+    opacity: 0.4;
+}
+
+.calendar-day.today {
+    background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+    border: 2px solid #3b82f6;
+}
+
+.calendar-day.selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+    border: 2px solid #9333ea;
+}
+
+.day-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.calendar-day.today .day-number {
+    color: #3b82f6;
+    font-weight: 700;
+}
+
+/* 事件标签 */
+.event-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.event-tag:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+/* 成员头像 */
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.member-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.member-avatar.selected {
+    box-shadow: 0 0 0 3px #3b82f6, 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 颜色选择器 */
+.color-option {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: #1f2937;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px white, 0 0 0 4px #1f2937;
+}
+
+/* 待办项 */
+.todo-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: all 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.todo-item:hover {
+    background: #f3f4f6;
+    transform: translateX(2px);
+}
+
+.todo-item.completed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.todo-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    margin-right: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.todo-checkbox.checked {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.todo-checkbox.checked::after {
+    content: "";
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+}
+
+/* 购物项 */
+.shopping-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: #fff7ed;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    border-left: 4px solid #f97316;
+}
+
+.shopping-item:hover {
+    background: #ffedd5;
+    transform: translateX(2px);
+}
+
+.shopping-item.purchased {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* 食谱卡片 */
+.recipe-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.recipe-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+}
+
+.recipe-image {
+    height: 140px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+}
+
+.recipe-content {
+    padding: 14px;
+}
+
+.recipe-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.recipe-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.recipe-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.recipe-tag.quick {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* 弹窗动画 */
+.modal {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal > div {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 标签页内容切换 */
+.tab-content {
+    animation: fadeIn 0.3s;
+}
+
+/* 响应式调整 */
+@media (max-width: 640px) {
+    .calendar-day {
+        min-height: 60px;
+        padding: 4px;
+    }
+
+    .day-number {
+        font-size: 12px;
+    }
+
+    .event-tag {
+        font-size: 9px;
+        padding: 1px 3px;
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}

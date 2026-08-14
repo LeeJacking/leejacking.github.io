@@ -1,202 +1,455 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>日历与天气 | Lee Jacking</title>
-<meta name="description" content="本页提供交互式日历与实时天气信息。">
-<link rel="canonical" href="/calendar-weather/">
-<link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-<link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#434648">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamilyHub - 家庭日程管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark" class="notransition">
-<script src="/js/theme.js"></script>
-<nav class="navbar" aria-label="Site Navigation">
-  <nav class="menu" aria-label="Main Navigation">
-    <a href="/" class="logo" title="Home">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </a>
-        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
-        <label for="menu-trigger">
-            <span class="menu-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
-            </span>
-        </label>
-        <div class="trigger">
-            <ul class="trigger-container">
-                <li><a class="menu-link" href="/">Home</a></li>
-                <li><a class="menu-link" href="/posts/">Posts</a></li>
-                <li class="menu-separator"><span>|</span></li>
-                <li><a class="menu-link active" href="/calendar-weather/">Calendar & Weather</a></li>
-            </ul>
-            <a id="mode" href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
-            </a>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">FamilyHub</h1>
+                        <p class="text-xs text-gray-500">家庭日程管理</p>
+                    </div>
+                </div>
+
+                <!-- 家庭成员头像栏 -->
+                <div class="flex items-center space-x-2" id="memberAvatars">
+                    <!-- 动态生成 -->
+                </div>
+
+                <button onclick="openAddMemberModal()" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span class="hidden sm:inline">添加成员</span>
+                </button>
+            </div>
         </div>
-  </nav>
-</nav>
-<main class="page-content" aria-label="Content">
-  <div id="calendar-weather-widget"></div>
-</main>
-<footer class="footer">
-    <span class="footer_item"></span>&nbsp;
-    <small class="footer_copyright">© 2025 Lee Jacking.</small>
-</footer>
-<a href="#" title="Go to top" id="totop"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960"><path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/></svg></a>
-<script async src="/js/main.js"></script>
-<script>
-(function initCalendarWeatherWidget(){
-  const host = document.getElementById('calendar-weather-widget');
-  if(!host) return;
-  // Polyfills / 兼容处理 (iOS12 及更旧降级)
-  if(!String.prototype.padStart){
-    String.prototype.padStart=function padStart(targetLength,padString){
-      targetLength = targetLength>>0; padString = String(padString||' ');
-      if(this.length >= targetLength) return String(this);
-      targetLength = targetLength - this.length;
-      if(targetLength > padString.length) padString += padString.repeat(Math.ceil(targetLength/padString.length));
-      return padString.slice(0,targetLength) + String(this);
-    };
-  }
-  // 如果不支持 Shadow DOM 则直接使用宿主元素 (降级)
-  const shadow = host.attachShadow ? host.attachShadow({mode:'open'}) : host;
-  shadow.innerHTML = `
-     <style>
-      * {box-sizing:border-box;} :host {display:block;}
-      .cw-container {margin:20px auto; max-width:1100px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.06); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}
-      .cw-header {display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid #e5e7eb; background:#fafafa;}
-      .cw-header h2 {margin:0; display:flex; align-items:center; gap:8px; font-weight:600; font-family:'Palatino Linotype','Book Antiqua',Palatino,'Times New Roman',serif; font-style:italic; font-size:17px; letter-spacing:.6px;}
-      .cw-main {display:flex; flex-wrap:wrap;}
-      .cw-weather {flex:0 0 260px; padding:16px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; border-radius:0 0 0 12px; display:flex; flex-direction:column; gap:6px; position:relative;}
-  .cw-icon {font-size:46px; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
-  .cw-temp {font-size:40px; font-weight:700; line-height:1;}
-  .cw-temp-row {display:flex; align-items:center; gap:10px;}
-      .cw-details {display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:8px; font-size:12px;}
-      .cw-refresh {position:absolute; top:12px; right:12px; background:rgba(255,255,255,.25); border:none; color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px;}
-      .cw-calendar {flex:1; padding:16px; min-width:320px;}
-      .cw-weekdays,.cw-grid {display:grid; grid-template-columns:repeat(7,1fr);} .cw-day {border:1px solid #f1f5f9; min-height:74px; padding:4px; font-size:11px; position:relative; cursor:pointer; background:#fff; display:flex; flex-direction:column; gap:2px;}
-      .cw-day.other {background:#f8fafc; color:#94a3b8;} .cw-day.today {outline:2px solid #6366f1; outline-offset:-2px;} .cw-day.selected {background:#eef2ff;}
-      .cw-events {display:flex; flex-direction:column; gap:2px; margin-top:auto;} .cw-event {font-size:10px; padding:2px 4px; border-radius:4px; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-      .cw-selected-panel {flex:1 1 100%; border-top:1px solid #e5e7eb; padding:12px 16px; background:#fafafa;}
-      @media (max-width:900px){.cw-main{flex-direction:column;} .cw-weather{border-radius:0; flex:1;}}
-  /* Modal 样式 (事件查看/添加) */
-  .cw-modal-backdrop {position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:9999; padding:20px;}
-  .cw-modal {background:#fff; width:100%; max-width:380px; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.2); padding:18px; font-size:14px; line-height:1.4;}
-  .cw-modal h3 {margin:0 0 12px; font-size:16px; font-weight:600;}
-  .cw-form-group {display:flex; flex-direction:column; gap:4px; margin-bottom:10px;}
-  .cw-form-group label {font-size:12px; color:#374151;}
-  .cw-form-group input,.cw-form-group select,.cw-form-group textarea {border:1px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:14px; font-family:inherit;}
-  .cw-modal-actions {display:flex; gap:10px; margin-top:6px;}
-  .cw-btn {border:none; cursor:pointer; border-radius:6px; padding:6px 12px; font-size:13px; font-family:inherit; background:#e5e7eb; color:#111827;}
-  .cw-btn.primary {background:#6366f1; color:#fff;}
-  .cw-btn.secondary {background:#9ca3af; color:#fff;}
-  .cw-btn.danger {background:#ef4444; color:#fff;}
-  .type-dot {display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; vertical-align:middle;}
-  .cw-selected-event {background:#fff; border:1px solid #e5e7eb; padding:8px 10px; border-radius:8px; margin-bottom:8px; font-size:12px;}
-  .cw-no-events {color:#6b7280; font-size:12px; padding:4px 2px;}
-  .cw-add-btn {margin-top:10px; border:1px dashed #6366f1; background:#eef2ff; color:#3730a3; padding:6px 10px; font-size:12px; border-radius:6px; cursor:pointer;}
-  .cw-event.work {background:#3b82f6;} .cw-event.personal {background:#10b981;} .cw-event.meeting {background:#f59e0b;} .cw-event.important {background:#ef4444;} .cw-event.other {background:#8b5cf6;}
-    </style>
-    <div class="cw-container" aria-label="Calendar and Weather">
-      <div class="cw-header">
-        <div class="cw-nav">
-          <button type="button" data-action="prev">◀</button>
-          <span class="cw-month-label" id="cwMonthLabel"></span>
-          <button type="button" data-action="next">▶</button>
-          <button type="button" data-action="today">今天</button>
+    </nav>
+
+    <!-- 主体内容区 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- 功能标签页 -->
+        <div class="bg-white rounded-xl shadow-sm p-1 mb-6 flex space-x-1 overflow-x-auto">
+            <button onclick="switchTab('dashboard')" data-tab="dashboard" class="tab-btn flex-1 min-w-max px-4 py-3 rounded-lg text-sm font-medium transition-all">
+                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+                总览
+            </button>
+            <button onclick="switchTab('calendar')" data-tab="calendar" class="tab-btn flex-1 min-w-max px-4 py-3 rounded-lg text-sm font-medium transition-all">
+                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                日历
+            </button>
+            <button onclick="switchTab('todos')" data-tab="todos" class="tab-btn flex-1 min-w-max px-4 py-3 rounded-lg text-sm font-medium transition-all">
+                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                待办
+            </button>
+            <button onclick="switchTab('shopping')" data-tab="shopping" class="tab-btn flex-1 min-w-max px-4 py-3 rounded-lg text-sm font-medium transition-all">
+                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                购物
+            </button>
+            <button onclick="switchTab('recipes')" data-tab="recipes" class="tab-btn flex-1 min-w-max px-4 py-3 rounded-lg text-sm font-medium transition-all">
+                <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                食谱
+            </button>
         </div>
-        <h2 class="cw-verse">This is the day the LORD has made; we will rejoice and be glad in it.</h2>
-        <div class="cw-font">
-          <button id="fontDecrease" type="button" title="字体缩小" style="padding:4px 8px; border:1px solid #6366f1; background:#eef2ff; color:#3730a3; border-radius:4px; cursor:pointer; font-size:12px; line-height:1;">A-</button>
-          <button id="fontIncrease" type="button" title="字体放大" style="padding:4px 8px; border:1px solid #6366f1; background:#eef2ff; color:#3730a3; border-radius:4px; cursor:pointer; font-size:12px; line-height:1;">A+</button>
+
+        <!-- 总览页面 -->
+        <section id="dashboard" class="tab-content">
+            <!-- 欢迎卡片 -->
+            <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl p-6 text-white mb-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-2" id="greeting">欢迎使用 FamilyHub</h2>
+                <p class="text-white/90" id="todaySummary">让家庭事务井井有条，让爱不被琐碎淹没</p>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">今日事件</p>
+                            <p class="text-2xl font-bold text-gray-800" id="todayEventCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">待办事项</p>
+                            <p class="text-2xl font-bold text-gray-800" id="todoCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">购物清单</p>
+                            <p class="text-2xl font-bold text-gray-800" id="shoppingCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">家庭成员</p>
+                            <p class="text-2xl font-bold text-gray-800" id="memberCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日事件和待办 -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- 今日事件 -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">今日事件</h3>
+                        <button onclick="switchTab('calendar')" class="text-sm text-blue-600 hover:text-blue-700">查看全部</button>
+                    </div>
+                    <div id="todayEvents" class="space-y-2">
+                        <p class="text-gray-500 text-sm">今日暂无安排</p>
+                    </div>
+                </div>
+
+                <!-- 待办事项 -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">待办事项</h3>
+                        <button onclick="switchTab('todos')" class="text-sm text-blue-600 hover:text-blue-700">查看全部</button>
+                    </div>
+                    <div id="pendingTodos" class="space-y-2">
+                        <p class="text-gray-500 text-sm">暂无待办事项</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 日历页面 -->
+        <section id="calendar" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800" id="calendarTitle">2026年7月</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button onclick="goToday()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">今天</button>
+                        <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <button onclick="openAddEventModal()" class="ml-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span>添加事件</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 日历网格 -->
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">日</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">一</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">二</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">三</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">四</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">五</div>
+                    <div class="text-center text-sm font-semibold text-gray-600 py-2">六</div>
+                </div>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 待办页面 -->
+        <section id="todos" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">待办事项</h2>
+                    <button onclick="openAddTodoModal()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>添加待办</span>
+                    </button>
+                </div>
+
+                <!-- 按成员分组 -->
+                <div id="todoByMember" class="space-y-4">
+                    <p class="text-gray-500 text-center py-8">请先添加家庭成员</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 购物清单页面 -->
+        <section id="shopping" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">购物清单</h2>
+                    <button onclick="openAddShoppingItemModal()" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>添加商品</span>
+                    </button>
+                </div>
+
+                <div id="shoppingList" class="space-y-2">
+                    <p class="text-gray-500 text-center py-8">购物清单是空的</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 食谱页面 -->
+        <section id="recipes" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">食谱库</h2>
+                    <div class="flex space-x-2">
+                        <select id="recipeFilter" onchange="filterRecipes()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="all">全部</option>
+                            <option value="quick">45分钟内快手菜</option>
+                            <option value="breakfast">早餐</option>
+                            <option value="lunch">午餐</option>
+                            <option value="dinner">晚餐</option>
+                            <option value="dessert">甜点</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="recipeGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 添加成员弹窗 -->
+    <div id="addMemberModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">添加家庭成员</h3>
+                <button onclick="closeModal('addMemberModal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+                    <input type="text" id="memberName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：妈妈、爸爸、小明">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">颜色</label>
+                    <div class="grid grid-cols-6 gap-2" id="colorPicker">
+                        <!-- 动态生成颜色选项 -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">角色</label>
+                    <select id="memberRole" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="parent">家长</option>
+                        <option value="child">孩子</option>
+                        <option value="grandparent">祖父母</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <button onclick="addMember()" class="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">确认添加</button>
+            </div>
         </div>
-      </div>
-      <div class="cw-main">
-        <section class="cw-weather" id="cwWeather">
-          <button class="cw-refresh" title="刷新" id="cwRefresh">↻</button>
-          <h3>南京市江宁区</h3>
-          <div class="cw-temp-row"><div class="cw-temp" id="cwTemp">--°</div><div class="cw-icon" id="cwIcon" aria-hidden="true">❓</div></div>
-          <div class="cw-details" id="cwDetails">
-            <div><span>体感:</span> <span id="cwFeels">--°</span></div>
-            <div><span>风速:</span> <span id="cwWind">--级</span></div>
-          </div>
-          <div style="font-size:11px; opacity:.8;" id="cwClock">当前时间: --:--</div>
-          <div style="font-size:11px; opacity:.8;" id="cwUpdate">更新时间: --:--</div>
-        </section>
-        <section class="cw-calendar">
-          <div class="cw-weekdays" id="cwWeekdays"></div>
-          <div class="cw-grid" id="cwGrid"></div>
-        </section>
-        <section class="cw-selected-panel" id="cwSelectedPanel" style="display:none;">
-          <h3 class="cw-selected-title" id="cwSelectedTitle">选择日期</h3>
-          <div id="cwSelectedEvents"></div>
-          <button type="button" class="cw-add-btn" id="cwAddEventBtn">➕ 添加事件</button>
-        </section>
-      </div>
-    </div>`;
-  const state={current:new Date(),selected:null,events:JSON.parse(localStorage.getItem('cwEvents')||'{}')};
-  // 字体缩放控制（移动到 shadow 生成后）
-  let cwScale=1;
-  function applyScale(){
-    host.style.transform=`scale(${cwScale})`;
-    host.style.transformOrigin='top left';
-  }
-  const incBtn=shadow.getElementById('fontIncrease');
-  const decBtn=shadow.getElementById('fontDecrease');
-  if(incBtn) incBtn.onclick=()=>{cwScale=Math.min(cwScale+0.1,2); applyScale();};
-  if(decBtn) decBtn.onclick=()=>{cwScale=Math.max(cwScale-0.1,0.6); applyScale();};
-  const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-  const weekdayNames=['周日','周一','周二','周三','周四','周五','周六'];
-  const gridEl=shadow.getElementById('cwGrid'); const monthLabelEl=shadow.getElementById('cwMonthLabel'); const weekdaysEl=shadow.getElementById('cwWeekdays');
-  weekdaysEl.innerHTML=weekdayNames.map(w=>`<div>${w}</div>`).join('');
-  function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-  function eventColor(t){return {work:'#3b82f6',personal:'#10b981',meeting:'#f59e0b',important:'#ef4444',other:'#8b5cf6'}[t]||'#8b5cf6';}
-  function renderCalendar(){const y=state.current.getFullYear(); const m=state.current.getMonth(); monthLabelEl.textContent=`${y}年 ${monthNames[m]}`; const first=new Date(y,m,1).getDay(); const dim=new Date(y,m+1,0).getDate(); const prevDays=new Date(y,m,0).getDate(); const cells=[]; for(let i=first-1;i>=0;i--)cells.push({d:new Date(y,m-1,prevDays-i),other:true}); for(let d=1;d<=dim;d++)cells.push({d:new Date(y,m,d)}); while(cells.length<42){cells.push({d:new Date(y,m+1,cells.length-(first+dim)+1),other:true});} gridEl.innerHTML=''; cells.forEach(c=>{const div=document.createElement('div'); div.className='cw-day'+(c.other?' other':''); const today=new Date(); if(c.d.toDateString()===today.toDateString()) div.classList.add('today'); if(state.selected && c.d.toDateString()===state.selected.toDateString()) div.classList.add('selected'); div.innerHTML=`<div style="font-weight:600;">${c.d.getDate()}</div>`; const evWrap=document.createElement('div'); evWrap.className='cw-events'; const evs=state.events[dateKey(c.d)]||[]; evs.slice(0,3).forEach(ev=>{const eDiv=document.createElement('div'); eDiv.className='cw-event '+ev.type; eDiv.textContent=ev.title; eDiv.title=ev.title; eDiv.onclick=(e)=>{e.stopPropagation(); showEventModal(ev,c.d);}; evWrap.appendChild(eDiv);}); if(evs.length>3){const more=document.createElement('div'); more.style.cssText='font-size:10px;color:#6b7280;'; more.textContent=`+${evs.length-3} 更多`; evWrap.appendChild(more);} div.appendChild(evWrap); div.onclick=()=>{state.selected=c.d; renderCalendar(); renderSelected();}; gridEl.appendChild(div);}); }
-  function renderSelected(){const panel=shadow.getElementById('cwSelectedPanel'); if(!state.selected){panel.style.display='none'; return;} panel.style.display='block'; const titleEl=shadow.getElementById('cwSelectedTitle'); const today=new Date(); const tomorrow=new Date(); tomorrow.setDate(today.getDate()+1); if(state.selected.toDateString()===today.toDateString()) titleEl.textContent='今天'; else if(state.selected.toDateString()===tomorrow.toDateString()) titleEl.textContent='明天'; else titleEl.textContent=`${state.selected.getFullYear()}年${state.selected.getMonth()+1}月${state.selected.getDate()}日 ${weekdayNames[state.selected.getDay()]}`; const listEl=shadow.getElementById('cwSelectedEvents'); const evs=state.events[dateKey(state.selected)]||[]; if(evs.length===0){listEl.innerHTML='<div class="cw-no-events">这个日期没有事件</div>'; return;} listEl.innerHTML=evs.map(ev=>`<div class="cw-selected-event"><div><span class="type-dot" style="background:${eventColor(ev.type)}"></span>${ev.title}</div><div style="margin-top:4px;font-size:11px;color:#6b7280;">${ev.description?ev.description:''}</div><div style="display:flex; gap:6px; margin-top:6px;"><button class="cw-btn danger" data-del="${ev.id}" style="font-size:11px;">删除</button></div></div>`).join(''); listEl.querySelectorAll('button[data-del]').forEach(btn=>{btn.onclick=()=>{const id=Number(btn.getAttribute('data-del')); const k=dateKey(state.selected); state.events[k]=state.events[k].filter(e=>e.id!==id); if(state.events[k].length===0) delete state.events[k]; localStorage.setItem('cwEvents', JSON.stringify(state.events)); renderCalendar(); renderSelected();};}); }
-  shadow.querySelectorAll('.cw-nav button').forEach(b=>{b.onclick=()=>{const a=b.getAttribute('data-action'); if(a==='prev') state.current.setMonth(state.current.getMonth()-1); else if(a==='next') state.current.setMonth(state.current.getMonth()+1); else if(a==='today'){state.current=new Date(); state.selected=new Date();} renderCalendar(); renderSelected();};});
-  shadow.getElementById('cwAddEventBtn').onclick=()=>openAddModal();
-  function openAddModal(){const backdrop=document.createElement('div'); backdrop.className='cw-modal-backdrop'; backdrop.innerHTML=`<div class="cw-modal"><h3>添加事件</h3><form id="cwAddForm"><div class="cw-form-group"><label>标题</label><input required name="title"/></div><div class="cw-form-group"><label>日期</label><input required type="date" name="date" value="${state.selected?dateKey(state.selected):dateKey(new Date())}" /></div><div class="cw-form-group"><label>类型</label><select name="type"><option value="work">工作</option><option value="personal">个人</option><option value="meeting">会议</option><option value="important">重要</option><option value="other">其他</option></select></div><div class="cw-form-group"><label>描述</label><textarea name="description" rows="3"></textarea></div><div class="cw-modal-actions"><button type="button" class="cw-btn secondary" data-close>取消</button><button type="submit" class="cw-btn primary" style="flex:1;">添加</button></div></form></div>`; document.body.appendChild(backdrop); backdrop.addEventListener('click',e=>{if(e.target===backdrop) backdrop.remove();}); backdrop.querySelector('[data-close]').onclick=()=>backdrop.remove(); backdrop.querySelector('#cwAddForm').onsubmit=e=>{e.preventDefault(); const fd=new FormData(e.target); const ev={id:Date.now(), title:fd.get('title'), type:fd.get('type'), description:fd.get('description'), createdAt:new Date().toISOString()}; const d=fd.get('date'); if(!state.events[d]) state.events[d]=[]; state.events[d].push(ev); localStorage.setItem('cwEvents', JSON.stringify(state.events)); state.selected=new Date(d); state.current=new Date(d); renderCalendar(); renderSelected(); backdrop.remove();}; }
-  function showEventModal(ev,date){const backdrop=document.createElement('div'); backdrop.className='cw-modal-backdrop'; const desc=(ev.description||'无描述'); const dt=dateKey(date); backdrop.innerHTML=`<div class="cw-modal"><h3>事件详情</h3><div style="margin-bottom:10px;font-size:13px;">日期：${dt}</div><div style="margin-bottom:10px;font-size:13px;">标题：<strong>${ev.title}</strong></div><div style="margin-bottom:12px;font-size:13px;">类型：<span class="type-dot" style="background:${eventColor(ev.type)}"></span>${ev.type}</div><div style="margin-bottom:12px;font-size:13px; white-space:pre-line;">描述：${desc || '无'}</div><div class="cw-modal-actions"><button type="button" class="cw-btn secondary" data-close>关闭</button><button type="button" class="cw-btn danger" data-del>删除</button></div></div>`; document.body.appendChild(backdrop); backdrop.addEventListener('click',e=>{if(e.target===backdrop) backdrop.remove();}); backdrop.querySelector('[data-close]').onclick=()=>backdrop.remove(); backdrop.querySelector('[data-del]').onclick=()=>{const k=dateKey(date); state.events[k]= (state.events[k]||[]).filter(x=>x.id!==ev.id); if(state.events[k]&&state.events[k].length===0) delete state.events[k]; localStorage.setItem('cwEvents', JSON.stringify(state.events)); backdrop.remove(); renderCalendar(); renderSelected();}; }
-  function getWeatherIcon(code){
-    const map={
-      // 晴/多云（日/夜）
-      '100':'☀️','101':'⛅','102':'🌤️','103':'🌥️','104':'☁️',
-      '150':'🌙','151':'☁️','152':'🌙','153':'☁️',
-      // 雨（含夜间代码）
-      '300':'🌦️','301':'🌧️','302':'⛈️','303':'⛈️','304':'⛈️',
-      '305':'🌧️','306':'🌧️','307':'🌧️','308':'🌧️','309':'🌦️','310':'🌧️','311':'🌧️','312':'🌧️','313':'🌧️',
-      '314':'🌧️','315':'🌧️','316':'🌧️','317':'🌧️','318':'🌧️',
-      '350':'🌦️','351':'🌧️','399':'🌧️',
-      // 雪 / 夹雨雪
-      '400':'🌨️','401':'🌨️','402':'🌨️','403':'🌨️','404':'🌨️','405':'🌨️','406':'🌨️','407':'🌨️',
-      '408':'🌨️','409':'🌨️','410':'🌨️','456':'🌨️','457':'🌨️','499':'🌨️',
-      // 雾 / 霾 / 沙尘
-      '500':'🌫️','501':'🌫️','502':'🌫️','503':'🏜️','504':'💨',
-      '507':'🌪️','508':'🌪️','509':'🌫️','510':'🌫️','511':'🌫️','512':'🌫️','513':'🌫️','514':'🌫️','515':'🌫️',
-      // 极端 / 其它
-      '900':'🔥','901':'🥶','999':'❓'
-    }; return map[String(code)]||'❓';
-  }
-  // 将 km/h 风速转换为 Beaufort 风力等级 (0-12级)
-  function windLevel(kmh){
-    const mps=kmh/3.6; // 转换为 m/s
-    const bounds=[0.3,1.6,3.4,5.5,8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7];
-    for(let i=0;i<bounds.length;i++) if(mps<bounds[i]) return i;
-    return 12;
-  }
-  async function fetchWeather(){const refresh=shadow.getElementById('cwRefresh'); refresh.disabled=true; refresh.style.opacity='.6'; try{const API_KEY='b95b36faf12146af9e99dbe6ace644bf'; const url=`https://mh564uewde.re.qweatherapi.com/v7/weather/now?location=101190110&key=${API_KEY}&lang=zh&unit=m`; const res=await fetch(url); if(!res.ok) throw new Error('网络错误'); const data=await res.json(); if(data&&data.now){shadow.getElementById('cwTemp').textContent=Math.round(+data.now.temp)+'°'; shadow.getElementById('cwFeels').textContent=Math.round(+data.now.feelsLike)+'°'; const ws=parseFloat(data.now.windSpeed); shadow.getElementById('cwWind').textContent=windLevel(ws)+'级'; shadow.getElementById('cwIcon').textContent=getWeatherIcon(data.now.icon); const now=new Date(); shadow.getElementById('cwUpdate').textContent='更新时间: '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');} else {shadow.getElementById('cwUpdate').textContent='天气数据为空';}} catch(e){shadow.getElementById('cwUpdate').textContent='天气获取失败';} finally{refresh.disabled=false; refresh.style.opacity='1';}}
-  function updateClock(){const now=new Date(); const hh=String(now.getHours()).padStart(2,'0'); const mm=String(now.getMinutes()).padStart(2,'0'); const clockEl=shadow.getElementById('cwClock'); if(clockEl) clockEl.textContent='当前时间: '+hh+':'+mm;}
-  shadow.getElementById('cwRefresh').onclick=fetchWeather;
-  fetchWeather(); updateClock(); renderCalendar(); renderSelected();
-  setInterval(updateClock, 60000); // 每分钟更新时间
-  setInterval(fetchWeather, 3600000); // 每小时自动刷新天气
-})();
-</script>
+    </div>
+
+    <!-- 添加事件弹窗 -->
+    <div id="addEventModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">添加日历事件</h3>
+                <button onclick="closeModal('addEventModal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">事件标题</label>
+                    <input type="text" id="eventTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：接孩子放学">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">日期</label>
+                    <input type="date" id="eventDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+                        <input type="time" id="eventStartTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+                        <input type="time" id="eventEndTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">负责人</label>
+                    <select id="eventAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">无</option>
+                        <!-- 动态生成成员选项 -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">备注（可选）</label>
+                    <textarea id="eventNote" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="添加备注..."></textarea>
+                </div>
+                <button onclick="addEvent()" class="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加待办弹窗 -->
+    <div id="addTodoModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">添加待办</h3>
+                <button onclick="closeModal('addTodoModal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">待办内容</label>
+                    <input type="text" id="todoContent" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：打扫客厅">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分配给</label>
+                    <select id="todoAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">无</option>
+                        <!-- 动态生成成员选项 -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">截止日期（可选）</label>
+                    <input type="date" id="todoDueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                    <select id="todoCategory" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="misc">杂物</option>
+                        <option value="personal">个人专属</option>
+                    </select>
+                </div>
+                <button onclick="addTodo()" class="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加购物项弹窗 -->
+    <div id="addShoppingItemModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">添加商品</h3>
+                <button onclick="closeModal('addShoppingItemModal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">商品名</label>
+                    <input type="text" id="shoppingItem" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：牛奶、鸡蛋">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">数量（可选）</label>
+                    <input type="text" id="shoppingQuantity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="如：2盒">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">采购人</label>
+                    <select id="shoppingAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">未指定</option>
+                        <!-- 动态生成成员选项 -->
+                    </select>
+                </div>
+                <button onclick="addShoppingItemFromForm()" class="w-full py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 食谱详情弹窗 -->
+    <div id="recipeDetailModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800" id="recipeDetailTitle">食谱详情</h3>
+                <button onclick="closeModal('recipeDetailModal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="recipeDetailContent">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
