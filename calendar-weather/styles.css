@@ -85,6 +85,51 @@ body {
     transform: scale(1.02);
 }
 
+.todo-calendar-tag {
+    background: #059669;
+}
+
+.weather-summary {
+    min-width: 190px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.weather-icon {
+    font-size: 24px;
+}
+
+.weather-temperature {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.weather-refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: auto;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    cursor: pointer;
+}
+
+.weather-refresh:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.weather-details {
+    margin-top: 3px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
 /* 成员头像 */
 .member-avatar {
     width: 36px;

@@ -79,8 +79,24 @@
         <section id="dashboard" class="tab-content">
             <!-- 欢迎卡片 -->
             <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl p-6 text-white mb-6 shadow-lg">
-                <h2 class="text-2xl font-bold mb-2" id="greeting">欢迎使用 FamilyHub</h2>
-                <p class="text-white/90" id="todaySummary">让家庭事务井井有条，让爱不被琐碎淹没</p>
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2" id="greeting">欢迎使用 FamilyHub</h2>
+                        <p class="text-white/90" id="todaySummary">让家庭事务井井有条，让爱不被琐碎淹没</p>
+                    </div>
+                    <div class="weather-summary" aria-live="polite">
+                        <div class="flex items-center gap-2">
+                            <span class="weather-icon" id="weatherIcon" aria-hidden="true">☀️</span>
+                            <span class="weather-temperature" id="weatherTemperature">--°</span>
+                            <button type="button" class="weather-refresh" onclick="refreshWeather()" aria-label="刷新天气" title="刷新天气">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.001 8.001 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="weather-details" id="weatherDetails">实时天气加载中...</div>
+                    </div>
+                </div>
             </div>
 
             <!-- 统计卡片 -->

@@ -202,6 +202,8 @@ const COLOR_PALETTE = [
     '#6b7280', '#84cc16', '#14b8a6', '#a855f7'
 ];
 
+const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=32.0603&longitude=118.7969&current=temperature_2m,apparent_temperature,wind_speed_10m,weather_code&timezone=Asia%2FShanghai';
+
 const RECIPES = [
     { id: 'r1', name: '番茄炒蛋', category: 'dinner', time: 15, isQuick: true, icon: '🍳', ingredients: ['番茄 2个', '鸡蛋 3个', '葱花 适量', '盐 适量', '糖 少许'], steps: ['番茄洗净切块，鸡蛋打散加少许盐', '热锅凉油，倒入蛋液炒至凝固盛出', '锅中再加少许油，放入番茄翻炒出汁', '加少许糖提鲜，倒入鸡蛋翻炒均匀', '撒上葱花，出锅'] },
     { id: 'r2', name: '蒜蓉西兰花', category: 'dinner', time: 20, isQuick: true, icon: '🥦', ingredients: ['西兰花 1颗', '大蒜 5瓣', '盐 适量', '蚝油 1勺', '食用油 适量'], steps: ['西兰花切成小朵，用盐水浸泡10分钟', '锅中烧水，加少许盐和油', '放入西兰花焯水2分钟捞出', '热锅凉油，爆香蒜末', '倒入西兰花翻炒，加蚝油和盐调味'] },
@@ -240,6 +242,42 @@ function formatDate(dateStr) {
 
 function getTodayStr() {
     return new Date().toISOString().split('T')[0];
+}
+
+function getWeatherIcon(code) {
+    if (code === 0) return '☀️';
+    if ([1, 2].includes(code)) return '🌤️';
+    if (code === 3) return '☁️';
+    if ([45, 48].includes(code)) return '🌫️';
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
+    if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return '❄️';
+    if (code >= 95) return '⛈️';
+    return '☁️';
+}
+
+async function refreshWeather() {
+    const temperature = document.getElementById('weatherTemperature');
+    const icon = document.getElementById('weatherIcon');
+    const details = document.getElementById('weatherDetails');
+    if (!temperature || !icon || !details) return;
+
+    details.textContent = '正在更新天气...';
+    try {
+        const response = await fetch(WEATHER_API_URL);
+        if (!response.ok) throw new Error('天气服务不可用');
+        const data = await response.json();
+        if (!data.current) throw new Error('未获取到天气数据');
+
+        const { temperature_2m: temp, apparent_temperature: feelsLike, wind_speed_10m: windSpeed, weather_code: weatherCode } = data.current;
+        temperature.textContent = `${Math.round(temp)}°`;
+        icon.textContent = getWeatherIcon(weatherCode);
+        details.textContent = `体感 ${Math.round(feelsLike)}° · 风力 ${Math.round(windSpeed)} km/h · ${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} 更新`;
+    } catch (error) {
+        console.warn('天气加载失败:', error);
+        temperature.textContent = '--°';
+        icon.textContent = '🌤️';
+        details.textContent = '天气信息暂时不可用';
+    }
 }
 
 // ==================== 成员管理 ====================
@@ -724,14 +762,23 @@ function createCalendarDay(day, dateStr, isOtherMonth, isToday = false, isSelect
     div.onclick = () => selectDate(dateStr);
 
     const dayEvents = appData.events.filter(e => e.date === dateStr);
-    const eventsHtml = dayEvents.slice(0, 3).map(event => {
+    const dayTodos = appData.todos.filter(todo => !todo.completed && todo.dueDate === dateStr);
+    const calendarItems = [
+        ...dayEvents.map(event => ({ type: 'event', item: event })),
+        ...dayTodos.map(todo => ({ type: 'todo', item: todo }))
+    ];
+    const itemsHtml = calendarItems.slice(0, 3).map(({ type, item }) => {
+        if (type === 'todo') {
+            return `<div class="event-tag todo-calendar-tag" title="待办：${item.content}">待办 · ${item.content}</div>`;
+        }
+        const event = item;
         const member = event.assigneeId ? getMemberById(event.assigneeId) : null;
         const color = member ? member.color : '#6b7280';
         return `<div class="event-tag" style="background:${color}" title="${event.title}">${event.startTime ? event.startTime + ' ' : ''}${event.title}</div>`;
     }).join('');
-    const moreText = dayEvents.length > 3 ? `<div class="event-tag" style="background:#9ca3af">+${dayEvents.length - 3}更多</div>` : '';
+    const moreText = calendarItems.length > 3 ? `<div class="event-tag" style="background:#9ca3af">+${calendarItems.length - 3}更多</div>` : '';
 
-    div.innerHTML = `<div class="day-number">${day}</div>${eventsHtml}${moreText}`;
+    div.innerHTML = `<div class="day-number">${day}</div>${itemsHtml}${moreText}`;
     return div;
 }
 
@@ -889,6 +936,7 @@ async function refreshData() {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     renderAll();
+    refreshWeather();
     switchTab('dashboard');
     subscribeToRealtimeChanges();
 
@@ -926,3 +974,4 @@ window.changeMonth = changeMonth;
 window.goToday = goToday;
 window.selectDate = selectDate;
 window.refreshData = refreshData;
+window.refreshWeather = refreshWeather;
